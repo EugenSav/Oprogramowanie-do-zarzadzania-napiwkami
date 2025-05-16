@@ -1,0 +1,9 @@
+/Users/maciejbajer/project/build/Desktop_Qt_6_9_0_ClangUnnamed-MinSizeRel/CMakeFiles/project.dir
+/Users/maciejbajer/project/build/Desktop_Qt_6_9_0_ClangUnnamed-MinSizeRel/CMakeFiles/edit_cache.dir
+/Users/maciejbajer/project/build/Desktop_Qt_6_9_0_ClangUnnamed-MinSizeRel/CMakeFiles/rebuild_cache.dir
+/Users/maciejbajer/project/build/Desktop_Qt_6_9_0_ClangUnnamed-MinSizeRel/CMakeFiles/list_install_components.dir
+/Users/maciejbajer/project/build/Desktop_Qt_6_9_0_ClangUnnamed-MinSizeRel/CMakeFiles/install.dir
+/Users/maciejbajer/project/build/Desktop_Qt_6_9_0_ClangUnnamed-MinSizeRel/CMakeFiles/install/local.dir
+/Users/maciejbajer/project/build/Desktop_Qt_6_9_0_ClangUnnamed-MinSizeRel/CMakeFiles/install/strip.dir
+/Users/maciejbajer/project/build/Desktop_Qt_6_9_0_ClangUnnamed-MinSizeRel/CMakeFiles/project_autogen_timestamp_deps.dir
+/Users/maciejbajer/project/build/Desktop_Qt_6_9_0_ClangUnnamed-MinSizeRel/CMakeFiles/project_autogen.dir
