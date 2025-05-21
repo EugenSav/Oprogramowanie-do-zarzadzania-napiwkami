@@ -15,6 +15,7 @@
 #include <QFileDialog>
 #include <QDate>
 #include "ReportGenerator.h"
+#include "SqlTipMetricsRepository.h"
 
 
 MainWindow::MainWindow(int userId, const QString& role, QWidget *parent)
@@ -102,7 +103,10 @@ void MainWindow::logout()
 
 void MainWindow::onPerformanceMetricsClicked()
 {
-    MetricsDialog *dialog = new MetricsDialog(m_userId, m_role, this);
+    auto* repository = new SqlTipMetricsRepository();
+    auto* service = new PerformanceService(repository);
+    auto* dialog = new MetricsDialog(m_userId, m_role, service, this);
+
     dialog->exec();
 }
 
@@ -154,7 +158,7 @@ void MainWindow::onCheckBalanceClicked()
 
 void MainWindow::createBackup()
 {
-    QString dbPath = "/Users/maciejbajer/Documents/sem4/io/tips.db";  // lub użyj zmiennej, jeśli masz
+    QString dbPath = "/Users/maciejbajer/Documents/sem4/io/tips.db";
 
     QString destDir = QFileDialog::getExistingDirectory(this, "Wybierz folder do zapisu kopii");
     if (destDir.isEmpty())
@@ -192,7 +196,6 @@ void MainWindow::onGenerateReportsClicked()
 {
     QDate current = QDate::currentDate();
 
-    // Dialog wyboru miesiąca
     bool ok;
     int year = QInputDialog::getInt(this, "Wybierz rok", "Rok:", current.year(), 2000, 2100, 1, &ok);
     if (!ok) return;
@@ -203,7 +206,7 @@ void MainWindow::onGenerateReportsClicked()
     QString destDir = QFileDialog::getExistingDirectory(this, "Wybierz folder na raporty");
     if (destDir.isEmpty()) return;
 
-    QString dbPath = "/Users/maciejbajer/Documents/sem4/io/tips.db";  // <--- Zmień jeśli masz dynamicznie
+    QString dbPath = "/Users/maciejbajer/Documents/sem4/io/tips.db";
     ReportGenerator generator(dbPath);
 
     if (generator.generateMonthlyReports(destDir, year, month)) {

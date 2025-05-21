@@ -3,11 +3,12 @@
 #include <QDebug>
 #include <QMessageBox>
 
-MetricsDialog::MetricsDialog(int userId, const QString& role, QWidget *parent)
+MetricsDialog::MetricsDialog(int userId, const QString& role, PerformanceService* service, QWidget *parent)
     : QDialog(parent),
     ui(new Ui::MetricsDialog),
     m_userId(userId),
-    m_role(role)
+    m_role(role),
+    m_service(service)  // <- zapisz wskaźnik
 {
     ui->setupUi(this);
 
@@ -16,7 +17,7 @@ MetricsDialog::MetricsDialog(int userId, const QString& role, QWidget *parent)
         ui->labelWaiterId->hide();
         ui->btnLoadMetrics->hide();
 
-        WaiterMetrics metrics = m_service.getWaiterPerformanceMetrics(m_userId, m_role, m_userId);
+        WaiterMetrics metrics = m_service->getWaiterPerformanceMetrics(m_userId, m_role, m_userId);
         fillTable(metrics);
     } else {
         ui->waiterIdSpinBox->setMinimum(1);
@@ -33,7 +34,7 @@ MetricsDialog::~MetricsDialog()
 void MetricsDialog::on_btnLoadMetrics_clicked()
 {
     int targetId = ui->waiterIdSpinBox->value();
-    WaiterMetrics metrics = m_service.getWaiterPerformanceMetrics(m_userId, m_role, targetId);
+    WaiterMetrics metrics = m_service->getWaiterPerformanceMetrics(m_userId, m_role, targetId);
     if (metrics.success) {
         fillTable(metrics);
     } else {
