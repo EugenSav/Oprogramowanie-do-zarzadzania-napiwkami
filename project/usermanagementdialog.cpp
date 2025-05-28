@@ -8,9 +8,6 @@ UserManagementDialog::UserManagementDialog(QWidget *parent)
     ui(new Ui::UserManagementDialog)
 {
     ui->setupUi(this);
-
-    // connect(ui->btnAddUser, &QPushButton::clicked, this, &UserManagementDialog::on_btnAddUser_clicked);
-    // connect(ui->btnDeleteUser, &QPushButton::clicked, this, &UserManagementDialog::on_btnDeleteUser_clicked);
 }
 
 UserManagementDialog::~UserManagementDialog()
