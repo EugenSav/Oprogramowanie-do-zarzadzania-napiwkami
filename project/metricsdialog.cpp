@@ -8,7 +8,7 @@ MetricsDialog::MetricsDialog(int userId, const QString& role, PerformanceService
     ui(new Ui::MetricsDialog),
     m_userId(userId),
     m_role(role),
-    m_service(service)  // <- zapisz wskaźnik
+    m_service(service)
 {
     ui->setupUi(this);
 
