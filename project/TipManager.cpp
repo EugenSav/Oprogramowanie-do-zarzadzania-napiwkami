@@ -40,9 +40,7 @@ bool TipManager::addTip(double amount, int waiter_id, std::optional<int> waiter2
 
 bool TipManager::correctLastTipAmount(int requesterId, const QString& role, double newAmount) {
 
-    // --- Krok 1: Znajdź ID i waiter1_id ostatniego napiwku w całej bazie danych (globalnie) ---
     QSqlQuery findQuery;
-    // Sortujemy malejąco po ID (zakładając, że wyższe ID = nowszy wpis) i bierzemy tylko 1 wynik.
     if (!findQuery.prepare(R"(
         SELECT id, waiter1_id
         FROM tips
@@ -59,7 +57,6 @@ bool TipManager::correctLastTipAmount(int requesterId, const QString& role, doub
         return false;
     }
 
-    // Sprawdź, czy w ogóle znaleziono jakiś napiwek w bazie danych
     if (!findQuery.next()) {
         qDebug() << "Nie znaleziono żadnego napiwku w bazie danych do skorygowania.";
         return false;
@@ -69,7 +66,6 @@ bool TipManager::correctLastTipAmount(int requesterId, const QString& role, doub
     int originalWaiter1Id = findQuery.value(1).toInt(); // waiter1_id TEGO ostatniego napiwku
 
 
-    // --- Krok 2: Kontrola dostępu ---
     bool accessGranted = false;
 
     if (role == "manager") {
@@ -81,17 +77,14 @@ bool TipManager::correctLastTipAmount(int requesterId, const QString& role, doub
             accessGranted = true;
             qDebug() << "Dostęp przyznany: Kelner (ID:" << requesterId << ") może edytować swój ostatni napiwek (ID:" << lastTipId << ").";
         } else {
-            // Kelner nie był głównym kelnerem ostatniego globalnie napiwku
             qDebug() << "Odmowa dostępu: Kelner (ID:" << requesterId << ") nie może edytować ostatniego globalnie napiwku (ID:" << lastTipId << "), bo go nie dodał jako główny kelner (dodał ID:" << originalWaiter1Id << ").";
             accessGranted = false; // Jawna odmowa
         }
     } else {
-        // Dowolna inna rola ma odmowę dostępu
         qDebug() << "Odmowa dostępu: Rola '" << role << "' nie ma uprawnień do edycji napiwków.";
         accessGranted = false;
     }
 
-    // --- Krok 3: Jeśli dostęp przyznany, zaktualizuj kwotę ---
     if (accessGranted) {
         QSqlQuery updateQuery;
         if (!updateQuery.prepare(R"(
@@ -112,7 +105,6 @@ bool TipManager::correctLastTipAmount(int requesterId, const QString& role, doub
             return false;
         }
 
-        // Sprawdź, czy UPDATE przebiegł pomyślnie (wpłynął na dokładnie 1 wiersz)
         if (updateQuery.numRowsAffected() == 1) {
             qDebug() << "Pomyślnie skorygowano kwotę ostatniego napiwku (ID:" << lastTipId << ") na:" << newAmount;
             return true;
