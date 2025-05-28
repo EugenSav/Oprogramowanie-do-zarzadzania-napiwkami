@@ -7,7 +7,6 @@
 #include <QDate>
 #include <QDebug>
 
-//troszke nie zgodna z SOLID
 ReportGenerator::ReportGenerator(const QString& databasePath)
     : m_databasePath(databasePath){}
 
