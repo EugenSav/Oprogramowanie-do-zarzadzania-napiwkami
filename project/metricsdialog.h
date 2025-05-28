@@ -18,5 +18,5 @@ private:
     Ui::MetricsDialog *ui;
     int m_userId;
     QString m_role;
-    PerformanceService* m_service;  // nowy: wskaźnik na serwis
+    PerformanceService* m_service;
 };
