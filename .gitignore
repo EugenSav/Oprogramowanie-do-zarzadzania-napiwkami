@@ -1,0 +1,13 @@
+# Ignore build directory
+project/build/
+__MACOSX/project/build/
+
+# Ignore Qt Creator user files
+*.user
+*.user.*
+
+# Ignore CMake-generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile

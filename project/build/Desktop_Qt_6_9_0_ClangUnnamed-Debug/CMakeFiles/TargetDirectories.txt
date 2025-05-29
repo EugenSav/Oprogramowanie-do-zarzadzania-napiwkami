@@ -1,9 +1,0 @@
-/Users/maciejbajer/project/build/Desktop_Qt_6_9_0_ClangUnnamed-Debug/CMakeFiles/project.dir
-/Users/maciejbajer/project/build/Desktop_Qt_6_9_0_ClangUnnamed-Debug/CMakeFiles/edit_cache.dir
-/Users/maciejbajer/project/build/Desktop_Qt_6_9_0_ClangUnnamed-Debug/CMakeFiles/rebuild_cache.dir
-/Users/maciejbajer/project/build/Desktop_Qt_6_9_0_ClangUnnamed-Debug/CMakeFiles/list_install_components.dir
-/Users/maciejbajer/project/build/Desktop_Qt_6_9_0_ClangUnnamed-Debug/CMakeFiles/install.dir
-/Users/maciejbajer/project/build/Desktop_Qt_6_9_0_ClangUnnamed-Debug/CMakeFiles/install/local.dir
-/Users/maciejbajer/project/build/Desktop_Qt_6_9_0_ClangUnnamed-Debug/CMakeFiles/install/strip.dir
-/Users/maciejbajer/project/build/Desktop_Qt_6_9_0_ClangUnnamed-Debug/CMakeFiles/project_autogen_timestamp_deps.dir
-/Users/maciejbajer/project/build/Desktop_Qt_6_9_0_ClangUnnamed-Debug/CMakeFiles/project_autogen.dir

@@ -1,2 +1,0 @@
-set(__QT_DEPLOY_TARGET_project_FILE /Users/maciejbajer/project/build/Desktop_Qt_6_9_0_ClangUnnamed-Debug/project.app/Contents/MacOS/project)
-set(__QT_DEPLOY_TARGET_project_TYPE EXECUTABLE)
