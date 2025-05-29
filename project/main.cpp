@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    QString dbPath = "/Users/maciejbajer/project/tips.db";
+    QString dbPath = "../../tips.db"; // can be changed later
     if (!DatabaseService::connect(dbPath)) {
         qDebug() << "Błąd połączenia z bazą danych:" << dbPath;
         return 1;
