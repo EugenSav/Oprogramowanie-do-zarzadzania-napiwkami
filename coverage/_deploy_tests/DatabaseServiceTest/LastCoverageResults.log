@@ -1,0 +1,71 @@
+[2025-06-07 19:25:18] [info] Start Program:
+Path:"C:\\Projects\\project\\out\\build\\debug\\DatabaseServiceTest.exe"
+Arguments:
+Working directory: not set.
+Modules: Selected: * Excluded: 
+Sources: Selected: C:\Projects\project Excluded: 
+Log Level: Normal
+Cover Children: 0
+Aggregate by file: 1
+Continue after C++ exception: 0
+Optimized build support: 0
+Export: html C:\Projects\project\coverage 
+Input coverage: 
+Unified diff: 
+Excluded line regular expressions: 
+Substitute pdb source paths: 
+[2025-06-07 19:25:18] [info] Module: C:\Projects\project\out\build\debug\DatabaseServiceTest.exe is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\ntdll.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\kernel32.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Program Files\Avast Software\Avast\aswhook.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\KernelBase.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\msvcp140d.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Projects\project\out\build\debug\Qt6Testd.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\vcruntime140d.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\ucrtbased.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\vcruntime140_1d.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\msvcp140_1d.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Projects\project\out\build\debug\Qt6Sqld.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Projects\project\out\build\debug\Qt6Cored.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Projects\project\out\build\debug\Qt6Cored.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Projects\project\out\build\debug\Qt6Cored.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\advapi32.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\msvcrt.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\mpr.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\userenv.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\sechost.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\ucrtbase.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\rpcrt4.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\rpcrt4.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\bcrypt.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\ole32.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\combase.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\netapi32.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\gdi32.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\authz.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\win32u.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\gdi32full.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\msvcp_win.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\user32.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\shell32.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\ws2_32.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\oleaut32.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\winmm.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\version.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\cryptbase.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\srvcli.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\netutils.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\imm32.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\bcryptprimitives.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\uxtheme.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\windows.storage.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\wldp.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\SHCore.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\shlwapi.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\profapi.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Projects\project\out\build\debug\sqldrivers\qsqlited.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] Module: C:\Windows\System32\kernel.appcore.dll is selected because it matches selected pattern: *
+[2025-06-07 19:25:18] [info] ----------------------------------------------------
+[2025-06-07 19:25:18] [info] Coverage generated in Folder C:\Projects\project\coverage
+[2025-06-07 19:25:18] [info] ----------------------------------------------------
+[2025-06-07 19:25:18] [info] The code coverage report is not what you expect? See the FAQ https://github.com/OpenCppCoverage/OpenCppCoverage/wiki/FAQ.
