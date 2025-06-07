@@ -1,0 +1,212 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+        <meta charset="utf-8"/>
+	    <title>SqlTipMetricsRepositoryTest.cpp</title>
+	    <link href="../../third-party/google-code-prettify/prettify-CppCoverage.css" type="text/css" rel="stylesheet" />
+	    <script type="text/javascript" src="../../third-party/google-code-prettify/prettify.js"></script>
+	</head>
+    <body onload="prettyPrint()">
+        <h4></h4>
+        <pre class="prettyprint lang-cpp linenums">
+#include &lt;QtTest&gt;
+#include &lt;QSqlDatabase&gt;
+#include &lt;QSqlQuery&gt;
+#include &lt;QSqlError&gt;
+#include &lt;QDate&gt;
+#include "SqlTipMetricsRepository.h"
+#include "PerformanceService.h"
+
+class SqlTipMetricsRepositoryTest : public QObject {
+    Q_OBJECT
+
+private:
+    SqlTipMetricsRepository repo;
+    QSqlDatabase db;
+
+<span style = "background-color:#dfd">    void insertTip(int waiter1, double amount, const QDate&amp; date, std::optional&lt;int&gt; waiter2 = std::nullopt) {
+        QSqlQuery q(db);
+        QVERIFY(q.prepare("INSERT INTO tips (waiter1_id, waiter2_id, amount, date) VALUES (?, ?, ?, ?)"));
+        q.addBindValue(waiter1);
+        q.addBindValue(waiter2.has_value() ? QVariant(waiter2.value()) : QVariant(QVariant::Int));
+        q.addBindValue(amount);
+        q.addBindValue(date.toString("yyyy-MM-dd"));
+        QVERIFY(q.exec());
+    }</span>
+
+private slots:
+<span style = "background-color:#dfd">    void initTestCase() {
+        db = QSqlDatabase::addDatabase("QSQLITE");
+        db.setDatabaseName(":memory:");
+        QVERIFY(db.open());</span>
+
+<span style = "background-color:#dfd">        QSqlQuery q(db);
+        QVERIFY(q.exec(R"(</span>
+            CREATE TABLE tips (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                waiter1_id INTEGER,
+                waiter2_id INTEGER,
+                amount REAL,
+                date TEXT
+            )
+        )"));
+<span style = "background-color:#dfd">    }</span>
+
+<span style = "background-color:#dfd">    void cleanup() {
+        QSqlQuery(db).exec("DELETE FROM tips");
+    }</span>
+
+<span style = "background-color:#dfd">    void test_SingleTip_FullAmountToWaiter1() {
+        QDate date = QDate::currentDate();
+        insertTip(1, 100.0, date); // waiter1 only</span>
+
+<span style = "background-color:#dfd">        WaiterMetrics m = repo.fetchWaiterMetrics(1, date, date);
+        QCOMPARE(m.totalTipsCount, 1);
+        QCOMPARE(m.totalAmountAttributed, 100.0);
+        QCOMPARE(m.averageAmountAttributed, 100.0);
+        QCOMPARE(m.sharedTipsPercentage, 0.0);
+        QVERIFY(m.success);
+    }</span>
+
+<span style = "background-color:#dfd">    void test_SingleTip_SplitBetweenWaiters() {
+        QDate date = QDate::currentDate();
+        insertTip(1, 100.0, date, 2); // shared tip</span>
+
+<span style = "background-color:#dfd">        WaiterMetrics m1 = repo.fetchWaiterMetrics(1, date, date);
+        QCOMPARE(m1.totalTipsCount, 1);
+        QCOMPARE(m1.totalAmountAttributed, 50.0);
+        QCOMPARE(m1.averageAmountAttributed, 50.0);
+        QCOMPARE(m1.sharedTipsPercentage, 100.0);
+        QVERIFY(m1.success);</span>
+
+<span style = "background-color:#dfd">        WaiterMetrics m2 = repo.fetchWaiterMetrics(2, date, date);
+        QCOMPARE(m2.totalTipsCount, 1);
+        QCOMPARE(m2.totalAmountAttributed, 50.0);
+        QCOMPARE(m2.sharedTipsPercentage, 100.0);
+        QVERIFY(m2.success);
+    }</span>
+
+<span style = "background-color:#dfd">    void test_MixedTips_MultipleCalculations() {
+        QDate d1 = QDate(2024, 1, 1);
+        QDate d2 = QDate(2024, 1, 2);
+        insertTip(1, 60, d1);          // 60 full
+        insertTip(1, 40, d2, 2);       // 20 to each
+        insertTip(3, 100, d2, 1);      // 50 to waiter1</span>
+
+<span style = "background-color:#dfd">        WaiterMetrics m = repo.fetchWaiterMetrics(1, d1, d2);
+        QCOMPARE(m.totalTipsCount, 3);
+        QCOMPARE(m.totalAmountAttributed, 60.0 + 20.0 + 50.0);
+        QCOMPARE(m.averageAmountAttributed, (60.0 + 20.0 + 50.0) / 3.0);
+        QCOMPARE(m.sharedTipsPercentage, 66.6666666667); // 2/3 shared
+        QVERIFY(m.success);
+    }</span>
+
+<span style = "background-color:#dfd">    void test_NoTips_ReturnsZero() {
+        QDate date = QDate(2024, 1, 1);
+        WaiterMetrics m = repo.fetchWaiterMetrics(99, date, date);
+        QCOMPARE(m.totalTipsCount, 0);
+        QCOMPARE(m.totalAmountAttributed, 0.0);
+        QCOMPARE(m.averageAmountAttributed, 0.0);
+        QCOMPARE(m.sharedTipsPercentage, 0.0);
+        QVERIFY(m.success);
+    }</span>
+
+<span style = "background-color:#dfd">    void test_TipAssignedOnlyAsWaiter2() {
+        QDate d = QDate::currentDate();
+        insertTip(5, 100.0, d, 1); // waiter1 = 5, waiter2 = 1</span>
+
+<span style = "background-color:#dfd">        WaiterMetrics m = repo.fetchWaiterMetrics(1, d, d);
+        QCOMPARE(m.totalTipsCount, 1);
+        QCOMPARE(m.totalAmountAttributed, 50.0);
+        QCOMPARE(m.sharedTipsPercentage, 100.0);
+        QVERIFY(m.success);
+    }</span>
+
+<span style = "background-color:#dfd">    void test_TipsOutsideDateRange_Ignored() {
+        QDate dPast = QDate(2020, 1, 1);
+        QDate dRange = QDate(2024, 1, 1);
+        insertTip(1, 99.0, dPast); // should be ignored
+        insertTip(1, 50.0, dRange); // should count</span>
+
+<span style = "background-color:#dfd">        WaiterMetrics m = repo.fetchWaiterMetrics(1, dRange, dRange);
+        QCOMPARE(m.totalTipsCount, 1);
+        QCOMPARE(m.totalAmountAttributed, 50.0);
+    }</span>
+
+<span style = "background-color:#dfd">    void test_NullSecondWaiterCountedCorrectly() {
+        QDate d = QDate::currentDate();
+        insertTip(1, 80.0, d); // waiter2 = null</span>
+
+<span style = "background-color:#dfd">        WaiterMetrics m = repo.fetchWaiterMetrics(1, d, d);
+        QCOMPARE(m.totalTipsCount, 1);
+        QCOMPARE(m.totalAmountAttributed, 80.0);
+        QCOMPARE(m.sharedTipsPercentage, 0.0);
+    }</span>
+
+<span style = "background-color:#dfd">    void test_NonParticipantWaiter_ZeroMetrics() {
+        QDate d = QDate::currentDate();
+        insertTip(1, 100.0, d, 2);</span>
+
+<span style = "background-color:#dfd">        WaiterMetrics m = repo.fetchWaiterMetrics(3, d, d);
+        QCOMPARE(m.totalTipsCount, 0);
+        QCOMPARE(m.totalAmountAttributed, 0.0);
+        QVERIFY(m.success);
+    }</span>
+
+<span style = "background-color:#dfd">    void test_WaiterAsBothWaiters() {
+        QDate d = QDate::currentDate();
+        insertTip(1, 100.0, d, 1); // waiter1_id == waiter2_id == 1</span>
+
+<span style = "background-color:#dfd">        WaiterMetrics m = repo.fetchWaiterMetrics(1, d, d);</span>
+        // çàâèñèò îò ëîãèêè: òóò îí ïîëó÷èò 50.0
+<span style = "background-color:#dfd">        QCOMPARE(m.totalTipsCount, 1);
+        QCOMPARE(m.totalAmountAttributed, 50.0); // ìîæåò áûòü 100.0 ïî ëîãèêå
+    }</span>
+
+<span style = "background-color:#dfd">    void test_MassiveTipsCount() {
+        QDate d = QDate::currentDate();
+        for (int i = 0; i &lt; 1000; ++i)
+            insertTip(1, 1.0, d);</span>
+
+<span style = "background-color:#dfd">        WaiterMetrics m = repo.fetchWaiterMetrics(1, d, d);
+        QCOMPARE(m.totalTipsCount, 1000);
+        QCOMPARE(m.totalAmountAttributed, 1000.0);
+    }</span>
+
+<span style = "background-color:#dfd">    void test_AverageAmountCalculationPrecision() {
+        QDate d = QDate::currentDate();
+        insertTip(1, 10, d);
+        insertTip(1, 30, d);
+        insertTip(1, 20, d);</span>
+
+<span style = "background-color:#dfd">        WaiterMetrics m = repo.fetchWaiterMetrics(1, d, d);
+        QCOMPARE(m.totalTipsCount, 3);
+        QVERIFY(std::abs(m.averageAmountAttributed - 20.0) &lt; 0.0001);
+    }</span>
+
+<span style = "background-color:#dfd">    void test_BrokenTable_ReturnsUnsuccessful() {
+        QSqlQuery().exec("DROP TABLE tips");</span>
+
+<span style = "background-color:#dfd">        QDate d = QDate::currentDate();
+        WaiterMetrics m = repo.fetchWaiterMetrics(1, d, d);
+        QVERIFY(!m.success);
+    }</span>
+};
+
+<span style = "background-color:#dfd">QTEST_MAIN(SqlTipMetricsRepositoryTest)</span>
+#include "SqlTipMetricsRepositoryTest.moc"</pre>
+        <hr />
+        <table width="100%">
+            <thead>
+                <tr>
+                    <th align="center">
+                        <small>Generated by</small>
+                        <a href="https://github.com/OpenCppCoverage/OpenCppCoverage/releases">
+                            <strong>OpenCppCoverage (Version: 0.9.9.0)</strong>
+                        </a>
+                    </th>
+                </tr>
+            </thead>
+        </table>
+    </body>
+</html>

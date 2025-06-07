@@ -1,0 +1,231 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+        <meta charset="utf-8"/>
+	    <title>TipManagerTest.cpp</title>
+	    <link href="../../third-party/google-code-prettify/prettify-CppCoverage.css" type="text/css" rel="stylesheet" />
+	    <script type="text/javascript" src="../../third-party/google-code-prettify/prettify.js"></script>
+	</head>
+    <body onload="prettyPrint()">
+        <h4></h4>
+        <pre class="prettyprint lang-cpp linenums">
+#include &lt;QtTest&gt;
+#include &lt;QSqlDatabase&gt;
+#include &lt;QSqlQuery&gt;
+#include &lt;QSqlError&gt;
+#include &lt;QDate&gt;
+#include "TipManager.h"
+
+class TipManagerTest : public QObject {
+    Q_OBJECT
+
+private:
+    TipManager manager;
+
+<span style = "background-color:#dfd">    QSqlQuery selectLastTip() {
+        QSqlQuery q;
+        q.prepare("SELECT waiter1_id, amount, date, waiter2_id FROM tips ORDER BY id DESC LIMIT 1");
+        q.exec();
+        q.next();
+        return q;
+    }</span>
+
+<span style = "background-color:#dfd">    void insertTip(int waiter1Id, double amount) {
+        QSqlQuery q;
+        QVERIFY(q.prepare("INSERT INTO tips (waiter1_id, amount, date) VALUES (?, ?, ?)"));
+        q.addBindValue(waiter1Id);
+        q.addBindValue(amount);
+        q.addBindValue(QDate::currentDate().toString("yyyy-MM-dd"));
+        QVERIFY(q.exec());
+    }</span>
+
+<span style = "background-color:#dfd">    double getLastTipAmount() {
+        QSqlQuery q("SELECT amount FROM tips ORDER BY id DESC LIMIT 1");</span>
+
+<span style = "background-color:#dfd">        if (!q.exec()) {</span>
+<span style = "background-color:#fdd">            throw std::runtime_error(("Request execution error: " + q.lastError().text()).toStdString());</span>
+        }
+<span style = "background-color:#dfd">        if (!q.next()) {</span>
+<span style = "background-color:#fdd">            throw std::runtime_error("There is no tip in the table.");</span>
+        }
+<span style = "background-color:#dfd">        return q.value(0).toDouble();
+    }</span>
+
+private slots:
+<span style = "background-color:#dfd">    void initTestCase() {
+        QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+        db.setDatabaseName(":memory:");
+        QVERIFY(db.open());</span>
+
+<span style = "background-color:#dfd">        QSqlQuery query;
+        QVERIFY(query.exec(R"(</span>
+            CREATE TABLE tips (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                waiter1_id INTEGER,
+                waiter2_id INTEGER,
+                amount REAL,
+                date TEXT
+            )
+        )"));
+<span style = "background-color:#dfd">    }</span>
+
+<span style = "background-color:#dfd">    void cleanup() {
+        QSqlQuery().exec("DROP TABLE IF EXISTS tips");</span>
+
+<span style = "background-color:#dfd">        QSqlQuery q;
+        q.exec(R"(</span>
+        CREATE TABLE tips (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            waiter1_id INTEGER,
+            waiter2_id INTEGER,
+            amount REAL,
+            date TEXT
+        )
+    )");
+<span style = "background-color:#dfd">    }</span>
+
+    // --- addTip tests ---
+
+<span style = "background-color:#dfd">    void testAddTip_waiterOnly() {
+        QVERIFY(manager.addTip(42.5, 1));
+        QSqlQuery q = selectLastTip();
+        QCOMPARE(q.value(0).toInt(), 1);
+        QCOMPARE(q.value(1).toDouble(), 42.5);
+        QVERIFY(q.value(3).isNull());
+    }</span>
+
+<span style = "background-color:#dfd">    void testAddTip_withSecondWaiter() {
+        QVERIFY(manager.addTip(100.0, 2, 3));
+        QSqlQuery q = selectLastTip();
+        QCOMPARE(q.value(0).toInt(), 2);
+        QCOMPARE(q.value(1).toDouble(), 100.0);
+        QCOMPARE(q.value(3).toInt(), 3);
+    }</span>
+
+<span style = "background-color:#dfd">    void testAddTip_zeroAmount() {
+        QVERIFY(manager.addTip(0.0, 4));
+        QSqlQuery q = selectLastTip();
+        QCOMPARE(q.value(1).toDouble(), 0.0);
+    }</span>
+
+<span style = "background-color:#dfd">    void testAddTip_negativeAmount() {
+        QVERIFY(manager.addTip(-20.0, 5));
+    }</span>
+
+<span style = "background-color:#dfd">    void testAddTip_largeAmount() {
+        double big = 999999999.99;
+        QVERIFY(manager.addTip(big, 6));
+        QSqlQuery q = selectLastTip();
+        QCOMPARE(q.value(1).toDouble(), big);
+    }</span>
+
+<span style = "background-color:#dfd">    void testAddTip_checkDate() {
+        manager.addTip(77.0, 7);
+        QSqlQuery q = selectLastTip();
+        QString today = QDate::currentDate().toString("yyyy-MM-dd");
+        QCOMPARE(q.value(2).toString(), today);
+    }</span>
+
+<span style = "background-color:#dfd">    void testAddTip_nullSecondWaiterExplicit() {
+        QVERIFY(manager.addTip(25.0, 8, std::nullopt));
+        QSqlQuery q = selectLastTip();
+        QCOMPARE(q.value(0).toInt(), 8);
+        QVERIFY(q.value(3).isNull());
+    }</span>
+
+<span style = "background-color:#dfd">    void testAddTip_multipleTimes() {
+        QVERIFY(manager.addTip(10.0, 9));
+        QVERIFY(manager.addTip(11.0, 9));
+        QVERIFY(manager.addTip(12.0, 9));</span>
+
+<span style = "background-color:#dfd">        QSqlQuery q;
+        QVERIFY(q.exec("SELECT COUNT(*) FROM tips WHERE waiter1_id = 9"));
+        QVERIFY(q.next());
+        QCOMPARE(q.value(0).toInt(), 3);
+    }</span>
+
+<span style = "background-color:#dfd">    void testAddTip_extremelyLargeAmount() {
+        double amount = 1e15;
+        QVERIFY(manager.addTip(amount, 10));
+        QSqlQuery q = selectLastTip();
+        QCOMPARE(q.value(1).toDouble(), amount);
+    }</span>
+
+<span style = "background-color:#dfd">    void testAddTip_floatingPointPrecision() {
+        QVERIFY(manager.addTip(12.3456789, 11));
+        QSqlQuery q = selectLastTip();
+        QCOMPARE(q.value(1).toDouble(), 12.3456789);
+    }</span>
+
+<span style = "background-color:#dfd">    void testAddTip_invalidWaiterId() {
+        QVERIFY(manager.addTip(50.0, -1));
+        QSqlQuery q = selectLastTip();
+        QCOMPARE(q.value(0).toInt(), -1);
+    }</span>
+
+<span style = "background-color:#dfd">    void testAddTip_withSameWaiters() {
+        QVERIFY(manager.addTip(70.0, 15, 15));
+        QSqlQuery q = selectLastTip();
+        QCOMPARE(q.value(0).toInt(), 15);
+        QCOMPARE(q.value(3).toInt(), 15);
+    }</span>
+
+<span style = "background-color:#dfd">    void testAddTip_failsOnMissingTable() {
+        QVERIFY(QSqlQuery().exec("DROP TABLE tips"));
+        QVERIFY(!manager.addTip(20.0, 99));
+    }</span>
+
+    // --- correctLastTipAmount tests ---
+
+<span style = "background-color:#dfd">    void test_NoTips_ReturnsFalse() {
+        QVERIFY(!manager.correctLastTipAmount(1, "manager", 123.45));
+    }</span>
+
+<span style = "background-color:#dfd">    void test_ManagerCanCorrectLastTip() {
+        insertTip(10, 50.0);
+        QVERIFY(manager.correctLastTipAmount(99, "manager", 111.11));
+        QCOMPARE(getLastTipAmount(), 111.11);
+    }</span>
+
+<span style = "background-color:#dfd">    void test_WaiterCanCorrectOwnTip() {
+        insertTip(20, 66.0);
+        QVERIFY(manager.correctLastTipAmount(20, "waiter", 77.77));
+        QCOMPARE(getLastTipAmount(), 77.77);
+    }</span>
+
+<span style = "background-color:#dfd">    void test_WaiterCannotCorrectOthersTip() {
+        insertTip(30, 88.0);
+        QVERIFY(!manager.correctLastTipAmount(99, "waiter", 999.99));
+        QCOMPARE(getLastTipAmount(), 88.0);
+    }</span>
+
+<span style = "background-color:#dfd">    void test_InvalidRoleDenied() {
+        insertTip(40, 123.0);
+        QVERIFY(!manager.correctLastTipAmount(40, "client", 222.0));
+        QCOMPARE(getLastTipAmount(), 123.0);
+    }</span>
+
+<span style = "background-color:#dfd">    void test_UpdateFails_ReturnsFalse() {
+        insertTip(50, 60.0);
+        QVERIFY(QSqlQuery().exec("DROP TABLE tips"));
+        QVERIFY(!manager.correctLastTipAmount(50, "manager", 999.0));
+    }</span>
+};
+
+<span style = "background-color:#dfd">QTEST_MAIN(TipManagerTest)</span>
+#include "TipManagerTest.moc"</pre>
+        <hr />
+        <table width="100%">
+            <thead>
+                <tr>
+                    <th align="center">
+                        <small>Generated by</small>
+                        <a href="https://github.com/OpenCppCoverage/OpenCppCoverage/releases">
+                            <strong>OpenCppCoverage (Version: 0.9.9.0)</strong>
+                        </a>
+                    </th>
+                </tr>
+            </thead>
+        </table>
+    </body>
+</html>

@@ -1,0 +1,144 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+        <meta charset="utf-8"/>
+	    <title>TipManager.cpp</title>
+	    <link href="../../third-party/google-code-prettify/prettify-CppCoverage.css" type="text/css" rel="stylesheet" />
+	    <script type="text/javascript" src="../../third-party/google-code-prettify/prettify.js"></script>
+	</head>
+    <body onload="prettyPrint()">
+        <h4></h4>
+        <pre class="prettyprint lang-cpp linenums">
+#include "TipManager.h"
+#include &lt;QSqlQuery&gt;
+#include &lt;QSqlError&gt;
+#include &lt;QDate&gt;
+#include &lt;QDebug&gt;
+#include &lt;QString&gt;
+
+<span style = "background-color:#dfd">bool TipManager::addTip(double amount, int waiter_id, std::optional&lt;int&gt; waiter2_id) {
+    QSqlQuery query;</span>
+
+<span style = "background-color:#dfd">    if (!query.prepare("INSERT INTO tips (waiter1_id, amount, date, waiter2_id) VALUES (?, ?, ?, ?)")) {
+        qDebug() &lt;&lt; "BÅÄd PRZYGOTOWANIA zapytania INSERT:";
+        qDebug() &lt;&lt; query.lastError().text();
+        return false;</span>
+    }
+
+<span style = "background-color:#dfd">    query.addBindValue(waiter_id);
+    query.addBindValue(amount);
+    query.addBindValue(QDate::currentDate().toString("yyyy-MM-dd"));</span>
+
+<span style = "background-color:#dfd">    if (waiter2_id.has_value()) {
+        query.addBindValue(waiter2_id.value());
+    } else {
+        query.addBindValue(QVariant());</span>
+    }
+
+<span style = "background-color:#dfd">    if (!query.exec()) {</span>
+<span style = "background-color:#fdd">        qDebug() &lt;&lt; "BÅÄd WYKONANIA zapytania INSERT:";
+        qDebug() &lt;&lt; query.lastError().text();
+        return false;</span>
+    }
+
+<span style = "background-color:#dfd">    qDebug() &lt;&lt; "Napiwek dodany: " &lt;&lt; amount &lt;&lt; " dla kelnera " &lt;&lt; waiter_id;
+    if (waiter2_id.has_value()) {
+        qDebug() &lt;&lt; " oraz kelnera " &lt;&lt; waiter2_id.value();</span>
+    }
+
+<span style = "background-color:#dfd">    return true;
+}</span>
+
+<span style = "background-color:#dfd">bool TipManager::correctLastTipAmount(int requesterId, const QString&amp; role, double newAmount) {</span>
+
+<span style = "background-color:#dfd">    QSqlQuery findQuery;
+    if (!findQuery.prepare(R"(</span>
+        SELECT id, waiter1_id
+        FROM tips
+        ORDER BY id DESC
+        LIMIT 1
+    )")) {
+<span style = "background-color:#dfd">        qDebug() &lt;&lt; "BÅÄd PRZYGOTOWANIA zapytania FIND GLOBAL LAST TIP:";
+        qDebug() &lt;&lt; findQuery.lastError().text();
+        return false;</span>
+    }
+<span style = "background-color:#dfd">    if (!findQuery.exec()) {</span>
+<span style = "background-color:#fdd">        qDebug() &lt;&lt; "BÅÄd WYKONANIA zapytania FIND GLOBAL LAST TIP:";
+        qDebug() &lt;&lt; findQuery.lastError().text();
+        return false;</span>
+    }
+
+<span style = "background-color:#dfd">    if (!findQuery.next()) {
+        qDebug() &lt;&lt; "Nie znaleziono Å¼adnego napiwku w bazie danych do skorygowania.";
+        return false;</span>
+    }
+
+<span style = "background-color:#dfd">    int lastTipId = findQuery.value(0).toInt();         // ID ostatniego napiwku znalezionego w bazie
+    int originalWaiter1Id = findQuery.value(1).toInt(); // waiter1_id TEGO ostatniego napiwku</span>
+
+
+<span style = "background-color:#dfd">    bool accessGranted = false;</span>
+
+<span style = "background-color:#dfd">    if (role == "manager") {
+        accessGranted = true;
+        qDebug() &lt;&lt; "DostÄp przyznany: Manager moÅ¼e edytowaÄ ostatni globalnie napiwek (ID:" &lt;&lt; lastTipId &lt;&lt; ").";
+    } else if (role == "waiter") {</span>
+        // Kelner ma dostÄp tylko, jeÅli byÅ PIERWSZYM kelnerem TEGO konkretnego ostatniego (globalnie) napiwku
+<span style = "background-color:#dfd">        if (requesterId == originalWaiter1Id) {
+            accessGranted = true;
+            qDebug() &lt;&lt; "DostÄp przyznany: Kelner (ID:" &lt;&lt; requesterId &lt;&lt; ") moÅ¼e edytowaÄ swÃ³j ostatni napiwek (ID:" &lt;&lt; lastTipId &lt;&lt; ").";
+        } else {
+            qDebug() &lt;&lt; "Odmowa dostÄpu: Kelner (ID:" &lt;&lt; requesterId &lt;&lt; ") nie moÅ¼e edytowaÄ ostatniego globalnie napiwku (ID:" &lt;&lt; lastTipId &lt;&lt; "), bo go nie dodaÅ jako gÅÃ³wny kelner (dodaÅ ID:" &lt;&lt; originalWaiter1Id &lt;&lt; ").";
+            accessGranted = false; // Jawna odmowa</span>
+        }
+<span style = "background-color:#dfd">    } else {
+        qDebug() &lt;&lt; "Odmowa dostÄpu: Rola '" &lt;&lt; role &lt;&lt; "' nie ma uprawnieÅ do edycji napiwkÃ³w.";
+        accessGranted = false;</span>
+    }
+
+<span style = "background-color:#dfd">    if (accessGranted) {
+        QSqlQuery updateQuery;
+        if (!updateQuery.prepare(R"(</span>
+            UPDATE tips
+            SET amount = ?
+            WHERE id = ?
+        )")) {
+<span style = "background-color:#fdd">            qDebug() &lt;&lt; "BÅÄd PRZYGOTOWANIA zapytania UPDATE TIP AMOUNT:";
+            qDebug() &lt;&lt; updateQuery.lastError().text();
+            return false;</span>
+        }
+<span style = "background-color:#dfd">        updateQuery.addBindValue(newAmount);
+        updateQuery.addBindValue(lastTipId);</span>
+
+<span style = "background-color:#dfd">        if (!updateQuery.exec()) {</span>
+<span style = "background-color:#fdd">            qDebug() &lt;&lt; "BÅÄd WYKONANIA zapytania UPDATE TIP AMOUNT:";
+            qDebug() &lt;&lt; updateQuery.lastError().text();
+            return false;</span>
+        }
+
+<span style = "background-color:#dfd">        if (updateQuery.numRowsAffected() == 1) {
+            qDebug() &lt;&lt; "PomyÅlnie skorygowano kwotÄ ostatniego napiwku (ID:" &lt;&lt; lastTipId &lt;&lt; ") na:" &lt;&lt; newAmount;
+            return true;</span>
+<span style = "background-color:#fdd">        } else {
+            qDebug() &lt;&lt; "Zapytanie UPDATE wykonane, ale nie zmodyfikowano dokÅadnie 1 wiersza (zmodyfikowano:" &lt;&lt; updateQuery.numRowsAffected() &lt;&lt; ").";
+            return false;</span>
+        }
+<span style = "background-color:#fdd">    } else {</span>
+<span style = "background-color:#dfd">        return false;</span>
+    }
+<span style = "background-color:#fdd">}</span></pre>
+        <hr />
+        <table width="100%">
+            <thead>
+                <tr>
+                    <th align="center">
+                        <small>Generated by</small>
+                        <a href="https://github.com/OpenCppCoverage/OpenCppCoverage/releases">
+                            <strong>OpenCppCoverage (Version: 0.9.9.0)</strong>
+                        </a>
+                    </th>
+                </tr>
+            </thead>
+        </table>
+    </body>
+</html>

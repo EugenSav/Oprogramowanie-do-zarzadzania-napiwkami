@@ -1,0 +1,151 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="utf-8"/>
+        <title>UserManagerTest.exe</title>
+        <link rel="stylesheet" type="text/css" href="../third-party/css/style.css"/>
+        <script src="../third-party/RGraph/libraries/RGraph.common.core.js" type="text/javascript"></script>
+        <script src="../third-party/RGraph/libraries/RGraph.common.dynamic.js" type="text/javascript"></script>
+        <script src="../third-party/RGraph/libraries/RGraph.common.tooltips.js" type="text/javascript"></script>
+        <script src="../third-party/RGraph/libraries/RGraph.pie.js" type="text/javascript"></script>
+        <script src="../third-party/JQuery/jquery-3.4.1.min.js"></script>
+    </head>
+    <body>
+    <script type="text/javascript">
+        $(document).ready(function ()
+        {
+            
+            new RGraph.Pie('pi_efcbbae0-4645-4aa8-8dd6-52bdb6ea1a9d', [183, 26])
+                .set('labels', ['Cover 87%','Uncover 13%'])
+                .set('colors', ['rgb(0,255,0)','rgb(255,0,0)'])
+                .set('linewidth', 1)
+                .set('shadow', true)
+                .set('tooltips', ['cover 183 lines (87%)', 'uncover 26 lines (13%)'])
+                .set('tooltips.event', 'onmousemove')
+                .set('labels.sticks', true)
+                .set('labels.sticks.length', 10)
+                .draw();
+            
+            new RGraph.Pie('pi_ddf7ce55-73ec-4a78-b946-bc68933b576c', [17, 20])
+                .set('labels', ['Cover 45%','Uncover 55%'])
+                .set('colors', ['rgb(0,255,0)','rgb(255,0,0)'])
+                .set('linewidth', 1)
+                .set('shadow', true)
+                .set('tooltips', ['cover 17 lines (45%)', 'uncover 20 lines (55%)'])
+                .set('tooltips.event', 'onmousemove')
+                .set('labels.sticks', true)
+                .set('labels.sticks.length', 10)
+                .draw();
+            
+            new RGraph.Pie('pi_eecec5a0-09e1-4f1a-b70f-cebdba830ece', [33, 6])
+                .set('labels', ['Cover 84%','Uncover 16%'])
+                .set('colors', ['rgb(0,255,0)','rgb(255,0,0)'])
+                .set('linewidth', 1)
+                .set('shadow', true)
+                .set('tooltips', ['cover 33 lines (84%)', 'uncover 6 lines (16%)'])
+                .set('tooltips.event', 'onmousemove')
+                .set('labels.sticks', true)
+                .set('labels.sticks.length', 10)
+                .draw();
+            
+            new RGraph.Pie('pi_1ab3edd4-76e0-42bf-9f39-f37e64380169', [133, 0])
+                .set('labels', ['Cover 100%','Uncover 0%'])
+                .set('colors', ['rgb(0,255,0)','rgb(255,0,0)'])
+                .set('linewidth', 1)
+                .set('shadow', true)
+                .set('tooltips', ['cover 133 lines (100%)', 'uncover 0 lines (0%)'])
+                .set('tooltips.event', 'onmousemove')
+                .set('labels.sticks', true)
+                .set('labels.sticks.length', 10)
+                .draw();
+            
+
+      })
+    </script>    
+        <h1>
+        UserManagerTest.exe
+        </h1>
+        <h4>
+        
+        </h4>
+        <table id="rounded-corner">
+            <thead>
+                <tr>
+                    <th scope="col" class="rounded-left">Coverage</th>
+                    <th scope="col">Total lines</th>
+                    <th scope="col" class="rounded-right">Items</th>
+                </tr>
+            </thead> 
+            <tbody>
+                
+                <tr>
+                    <td>
+            <canvas id="pi_efcbbae0-4645-4aa8-8dd6-52bdb6ea1a9d" width="280" height="100">Cover 87%</canvas>
+                    </td>            
+                    <td>209</td>
+                    <td>            
+                      
+                      C:\Projects\project\out\build\debug\UserManagerTest.exe
+                      
+                    </td>
+                </tr>        
+                
+                <tr>
+                    <td>
+            <canvas id="pi_ddf7ce55-73ec-4a78-b946-bc68933b576c" width="280" height="100">Cover 45%</canvas>
+                    </td>            
+                    <td>37</td>
+                    <td>            
+                       <a href="UserManagerTest/UserManagerTest.moc.html">C:\Projects\project\out\build\debug\UserManagerTest_autogen\include\UserManagerTest.moc</a> 
+                      
+                      
+                    </td>
+                </tr>        
+                
+                <tr>
+                    <td>
+            <canvas id="pi_eecec5a0-09e1-4f1a-b70f-cebdba830ece" width="280" height="100">Cover 84%</canvas>
+                    </td>            
+                    <td>39</td>
+                    <td>            
+                       <a href="UserManagerTest/UserManager.cpp.html">C:\Projects\project\UserManager.cpp</a> 
+                      
+                      
+                    </td>
+                </tr>        
+                
+                <tr>
+                    <td>
+            <canvas id="pi_1ab3edd4-76e0-42bf-9f39-f37e64380169" width="280" height="100">Cover 100%</canvas>
+                    </td>            
+                    <td>133</td>
+                    <td>            
+                       <a href="UserManagerTest/UserManagerTest.cpp.html">C:\Projects\project\tests\UserManagerTest.cpp</a> 
+                      
+                      
+                    </td>
+                </tr>        
+                
+            </tbody>
+            <tfoot>
+                <tr>
+                <td colspan="2" class="rounded-foot-left"></td>
+                <td class="rounded-foot-right"></td>
+                </tr>
+            </tfoot>            
+        </table>
+        <hr/>
+        <table width="100%" >
+         <thead>
+            <tr>
+               <th align="center">
+                  <small>Generated by</small>
+                  <a href="https://github.com/OpenCppCoverage/OpenCppCoverage/releases">
+                     <strong>OpenCppCoverage (Version: 0.9.9.0)</strong>
+                  </a>
+               </th>
+            </tr>
+         </thead>
+        </table>
+    </body>
+</html>

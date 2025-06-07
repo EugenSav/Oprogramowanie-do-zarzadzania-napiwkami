@@ -1,0 +1,225 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+        <meta charset="utf-8"/>
+	    <title>UserManagerTest.cpp</title>
+	    <link href="../../third-party/google-code-prettify/prettify-CppCoverage.css" type="text/css" rel="stylesheet" />
+	    <script type="text/javascript" src="../../third-party/google-code-prettify/prettify.js"></script>
+	</head>
+    <body onload="prettyPrint()">
+        <h4></h4>
+        <pre class="prettyprint lang-cpp linenums">
+ï»¿#include &lt;QtTest&gt;
+#include "UserManager.h"
+#include &lt;QSqlDatabase&gt;
+#include &lt;QSqlQuery&gt;
+#include &lt;QSqlError&gt;
+#include &lt;QRegularExpression&gt;
+
+class UserManagerTest : public QObject {
+    Q_OBJECT
+
+private:
+    UserManager userManager;
+    QSqlDatabase db;
+
+private slots:
+<span style = "background-color:#dfd">    void initTestCase() {
+        db = QSqlDatabase::addDatabase("QSQLITE");
+        db.setDatabaseName(":memory:");
+        QVERIFY(db.open());</span>
+
+<span style = "background-color:#dfd">        QSqlQuery query;
+        QVERIFY(query.exec("CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, password TEXT, role TEXT)"));</span>
+
+        struct UserInfo {
+            QString username;
+            QString password;
+            QString role;
+        };
+
+<span style = "background-color:#dfd">        QList&lt;UserInfo&gt; users = {</span>
+            {"alice",     "secret",     "manager"},
+            {"admin",     "adminpass",  "admin"},
+            {"kelner1",   "haslo123",   "kelner"},
+            {"friend",    "pass_word",   "observer"},
+            {"USER",      "123456",     "uppercase"},
+            {"emojið§ª",   "test",       "unicode"}
+        };
+
+<span style = "background-color:#dfd">        for (const auto&amp; u : users) {
+            QString hash = userManager.hashPassword(u.password);
+            query.prepare("INSERT INTO users (username, password, role) VALUES (?, ?, ?)");
+            query.addBindValue(u.username);
+            query.addBindValue(hash);
+            query.addBindValue(u.role);
+            QVERIFY2(query.exec(), query.lastError().text().toUtf8().constData());
+        }
+    }</span>
+
+<span style = "background-color:#dfd">    void cleanupTestCase() {
+        db.close();
+    }</span>
+
+<span style = "background-color:#dfd">    void testHashPassword() {</span>
+
+<span style = "background-color:#dfd">        QString p1 = "password123";
+        QString p2 = "password123";
+        QString p3 = "Password123";
+        QString p4 = "pss wrd";
+        QString p5 = "";
+        QString p6 = "??????";
+        QString p7 = QString(1000, 'x');</span>
+
+<span style = "background-color:#dfd">        QString h1 = userManager.hashPassword(p1);
+        QString h2 = userManager.hashPassword(p2);
+        QString h3 = userManager.hashPassword(p3);
+        QString h4 = userManager.hashPassword(p4);
+        QString h5 = userManager.hashPassword(p5);
+        QString h6 = userManager.hashPassword(p6);
+        QString h7 = userManager.hashPassword(p7);</span>
+
+<span style = "background-color:#dfd">        QCOMPARE(h1, h2);</span>
+
+<span style = "background-color:#dfd">        QVERIFY(h1 != h3);
+        QVERIFY(h1 != h4);
+        QVERIFY(h1 != h5);
+        QVERIFY(h1 != h6);</span>
+
+<span style = "background-color:#dfd">        QCOMPARE(h1.length(), 64);
+        QCOMPARE(h4.length(), 64);
+        QCOMPARE(h5.length(), 64);
+        QCOMPARE(h6.length(), 64);
+        QCOMPARE(h7.length(), 64);</span>
+
+<span style = "background-color:#dfd">        QVERIFY(!h1.isEmpty());
+        QVERIFY(!h5.isEmpty());
+        QVERIFY(!h6.isEmpty());</span>
+
+<span style = "background-color:#dfd">        QRegularExpression hexRegex("^[0-9a-f]{64}$");
+        QVERIFY(hexRegex.match(h1).hasMatch());
+        QVERIFY(hexRegex.match(h4).hasMatch());
+        QVERIFY(hexRegex.match(h6).hasMatch());
+    }</span>
+
+<span style = "background-color:#dfd">    void testLogin_data() {
+        QTest::addColumn&lt;QString&gt;("username");
+        QTest::addColumn&lt;QString&gt;("password");
+        QTest::addColumn&lt;bool&gt;("expected");</span>
+
+<span style = "background-color:#dfd">        QTest::newRow("alice correct") &lt;&lt; "alice" &lt;&lt; "secret" &lt;&lt; true;
+        QTest::newRow("admin correct") &lt;&lt; "admin" &lt;&lt; "adminpass" &lt;&lt; true;
+        QTest::newRow("kelner correct") &lt;&lt; "kelner1" &lt;&lt; "haslo123" &lt;&lt; true;
+        QTest::newRow("friend correct") &lt;&lt; "friend" &lt;&lt; "pass_word" &lt;&lt; true;
+        QTest::newRow("uppercase correct") &lt;&lt; "USER" &lt;&lt; "123456" &lt;&lt; true;
+        QTest::newRow("emoji correct") &lt;&lt; "emojið§ª" &lt;&lt; "test" &lt;&lt; true;</span>
+
+<span style = "background-color:#dfd">        QTest::newRow("alice wrong password") &lt;&lt; "alice" &lt;&lt; "wrong" &lt;&lt; false;
+        QTest::newRow("admin wrong") &lt;&lt; "admin" &lt;&lt; "pass" &lt;&lt; false;</span>
+
+<span style = "background-color:#dfd">        QTest::newRow("unknown user") &lt;&lt; "bob" &lt;&lt; "secret" &lt;&lt; false;</span>
+
+<span style = "background-color:#dfd">        QTest::newRow("alise with space") &lt;&lt; "alice " &lt;&lt; "secret" &lt;&lt; false;
+        QTest::newRow("space with alice") &lt;&lt; " alice" &lt;&lt; "secret" &lt;&lt; false;</span>
+
+<span style = "background-color:#dfd">        QTest::newRow("sql inject username") &lt;&lt; "' OR 1=1 --" &lt;&lt; "secret" &lt;&lt; false;
+        QTest::newRow("sql inject password") &lt;&lt; "alice" &lt;&lt; "' OR 1=1 --" &lt;&lt; false;
+        QTest::newRow("sql inject both") &lt;&lt; "' OR 1=1 --" &lt;&lt; "' OR 1=1 --" &lt;&lt; false;</span>
+
+<span style = "background-color:#dfd">        QTest::newRow("empty username") &lt;&lt; "" &lt;&lt; "secret" &lt;&lt; false;
+        QTest::newRow("empty password") &lt;&lt; "alice" &lt;&lt; "" &lt;&lt; false;
+        QTest::newRow("empty both") &lt;&lt; "" &lt;&lt; "" &lt;&lt; false;</span>
+
+<span style = "background-color:#dfd">        QTest::newRow("case mismatch") &lt;&lt; "ALICE" &lt;&lt; "secret" &lt;&lt; false;
+        QTest::newRow("case mismatch password") &lt;&lt; "alice" &lt;&lt; "SECRET" &lt;&lt; false;</span>
+
+<span style = "background-color:#dfd">        QTest::newRow("long username") &lt;&lt; QString(500, 'a') &lt;&lt; "secret" &lt;&lt; false;
+        QTest::newRow("long password") &lt;&lt; "alice" &lt;&lt; QString(1000, 'p') &lt;&lt; false;
+        QTest::newRow("long both") &lt;&lt; QString(500, 'a') &lt;&lt; QString(1000, 'p') &lt;&lt; false;
+    }</span>
+
+<span style = "background-color:#dfd">    void testLogin() {
+        QFETCH(QString, username);
+        QFETCH(QString, password);
+        QFETCH(bool, expected);</span>
+
+<span style = "background-color:#dfd">        bool result = userManager.login(username, password);
+        QCOMPARE(result, expected);
+    }</span>
+
+<span style = "background-color:#dfd">    void testGetRole_data() {
+        QTest::addColumn&lt;QString&gt;("username");
+        QTest::addColumn&lt;QString&gt;("expectedRole");</span>
+
+<span style = "background-color:#dfd">        QTest::newRow("manager user") &lt;&lt; "alice" &lt;&lt; "manager";
+        QTest::newRow("admin user") &lt;&lt; "admin" &lt;&lt; "admin";
+        QTest::newRow("kelner user") &lt;&lt; "kelner1" &lt;&lt; "kelner";
+        QTest::newRow("friend user") &lt;&lt; "friend" &lt;&lt; "observer";
+        QTest::newRow("emoji user") &lt;&lt; "emojið§ª" &lt;&lt; "unicode";
+        QTest::newRow("uppercase name") &lt;&lt; "USER" &lt;&lt; "uppercase";</span>
+
+<span style = "background-color:#dfd">        QTest::newRow("nonexistent") &lt;&lt; "bob" &lt;&lt; "";
+        QTest::newRow("empty login") &lt;&lt; "" &lt;&lt; "";
+        QTest::newRow("wrong case") &lt;&lt; "ALICE" &lt;&lt; "";
+        QTest::newRow("injected input") &lt;&lt; "' OR 1=1 --" &lt;&lt; "";
+        QTest::newRow("long input") &lt;&lt; QString(500, 'x') &lt;&lt; "";
+    }</span>
+
+<span style = "background-color:#dfd">    void testGetRole() {
+        QFETCH(QString, username);
+        QFETCH(QString, expectedRole);</span>
+
+<span style = "background-color:#dfd">        QCOMPARE(userManager.getRole(username), expectedRole);
+    }</span>
+
+<span style = "background-color:#dfd">    void testGetUserId_data() {
+        QTest::addColumn&lt;QString&gt;("username");
+        QTest::addColumn&lt;bool&gt;("expectValidId");</span>
+
+<span style = "background-color:#dfd">        QTest::newRow("valid alice") &lt;&lt; "alice" &lt;&lt; true;
+        QTest::newRow("valid admin") &lt;&lt; "admin" &lt;&lt; true;
+        QTest::newRow("valid kelner1") &lt;&lt; "kelner1" &lt;&lt; true;
+        QTest::newRow("unicode name") &lt;&lt; "friend" &lt;&lt; true;
+        QTest::newRow("emoji name") &lt;&lt; "emojið§ª" &lt;&lt; true;</span>
+
+<span style = "background-color:#dfd">        QTest::newRow("nonexistent user") &lt;&lt; "bob" &lt;&lt; false;
+        QTest::newRow("nonexistent user with space") &lt;&lt; "bob " &lt;&lt; false;
+        QTest::newRow("nonexistent user with space at start") &lt;&lt; " bob" &lt;&lt; false;
+        QTest::newRow("empty username") &lt;&lt; "" &lt;&lt; false;
+        QTest::newRow("empty username with space") &lt;&lt; " " &lt;&lt; false;
+        QTest::newRow("wrong case") &lt;&lt; "ALICE" &lt;&lt; false;
+        QTest::newRow("sql injection") &lt;&lt; "' OR 1=1 --" &lt;&lt; false;
+        QTest::newRow("long input") &lt;&lt; QString(1000, 'x') &lt;&lt; false;
+    }</span>
+
+<span style = "background-color:#dfd">    void testGetUserId() {
+        QFETCH(QString, username);
+        QFETCH(bool, expectValidId);</span>
+
+<span style = "background-color:#dfd">        int id = userManager.getUserId(username);
+        if (expectValidId) {
+            QVERIFY(id &gt; 0);
+        }</span>
+        else {
+<span style = "background-color:#dfd">            QCOMPARE(id, -1);</span>
+        }
+<span style = "background-color:#dfd">    }</span>
+};
+
+<span style = "background-color:#dfd">QTEST_MAIN(UserManagerTest)</span>
+#include "UserManagerTest.moc"</pre>
+        <hr />
+        <table width="100%">
+            <thead>
+                <tr>
+                    <th align="center">
+                        <small>Generated by</small>
+                        <a href="https://github.com/OpenCppCoverage/OpenCppCoverage/releases">
+                            <strong>OpenCppCoverage (Version: 0.9.9.0)</strong>
+                        </a>
+                    </th>
+                </tr>
+            </thead>
+        </table>
+    </body>
+</html>
