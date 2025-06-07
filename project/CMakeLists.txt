@@ -96,3 +96,96 @@ install(TARGETS project
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(project)
 endif()
+
+enable_testing()
+
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Test)
+
+# Add the test executable for UserManager
+add_executable(UserManagerTest
+    tests/UserManagerTest.cpp
+    UserManager.cpp
+)
+
+target_include_directories(UserManagerTest PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}          
+)
+
+target_link_libraries(UserManagerTest
+    Qt${QT_VERSION_MAJOR}::Test
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Sql 
+)
+
+add_test(NAME UserManagerTest COMMAND UserManagerTest)
+
+# Add the test executable for TipManager
+add_executable(TipManagerTest
+    tests/TipManagerTest.cpp
+    TipManager.cpp
+)
+
+target_include_directories(TipManagerTest PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+target_link_libraries(TipManagerTest
+    Qt${QT_VERSION_MAJOR}::Test
+    Qt${QT_VERSION_MAJOR}::Sql
+    Qt${QT_VERSION_MAJOR}::Core
+)
+
+add_test(NAME TipManagerTest COMMAND TipManagerTest)
+
+# Add the test executable for BackupServiceTest
+add_executable(BackupServiceTest
+    tests/BackupServiceTest.cpp
+    BackupService.cpp
+)
+
+target_include_directories(BackupServiceTest PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}     
+)
+
+target_link_libraries(BackupServiceTest
+    Qt${QT_VERSION_MAJOR}::Test
+    Qt${QT_VERSION_MAJOR}::Core
+)
+
+add_test(NAME BackupServiceTest COMMAND BackupServiceTest)
+
+# Add the test executable for SqlTipMetricsRepositoryTest
+add_executable(SqlTipMetricsRepositoryTest
+    tests/SqlTipMetricsRepositoryTest.cpp
+    SqlTipMetricsRepository.cpp
+)
+
+target_include_directories(SqlTipMetricsRepositoryTest PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+target_link_libraries(SqlTipMetricsRepositoryTest
+    Qt${QT_VERSION_MAJOR}::Test
+    Qt${QT_VERSION_MAJOR}::Sql
+    Qt${QT_VERSION_MAJOR}::Core
+)
+
+add_test(NAME SqlTipMetricsRepositoryTest COMMAND SqlTipMetricsRepositoryTest)
+
+# Add the test executable for DatabaseServiceTest
+add_executable(DatabaseServiceTest
+    tests/DatabaseServiceTest.cpp
+    DatabaseService.cpp
+)
+
+target_include_directories(DatabaseServiceTest PRIVATE 
+${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+target_link_libraries(DatabaseServiceTest
+    Qt${QT_VERSION_MAJOR}::Test
+    Qt${QT_VERSION_MAJOR}::Sql
+    Qt${QT_VERSION_MAJOR}::Core
+)
+
+add_test(NAME DatabaseServiceTest COMMAND DatabaseServiceTest)
