@@ -189,3 +189,75 @@ target_link_libraries(DatabaseServiceTest
 )
 
 add_test(NAME DatabaseServiceTest COMMAND DatabaseServiceTest)
+
+# Add the test executable for BalanceCalculatorTest
+add_executable(BalanceCalculatorTest
+    tests/BalanceCalculatorTest.cpp
+    BalanceCalculator.cpp
+)
+
+target_include_directories(BalanceCalculatorTest PRIVATE 
+${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+target_link_libraries(BalanceCalculatorTest
+    Qt${QT_VERSION_MAJOR}::Test
+    Qt${QT_VERSION_MAJOR}::Sql
+    Qt${QT_VERSION_MAJOR}::Core
+)
+
+add_test(NAME BalanceCalculatorTest COMMAND BalanceCalculatorTest)
+
+# Add the test executable for PerformanceServiceTest
+add_executable(PerformanceServiceTest
+    tests/PerformanceServiceTest.cpp
+    PerformanceService.cpp
+)
+
+target_include_directories(PerformanceServiceTest PRIVATE 
+${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+target_link_libraries(PerformanceServiceTest
+    Qt${QT_VERSION_MAJOR}::Test
+    Qt${QT_VERSION_MAJOR}::Sql
+    Qt${QT_VERSION_MAJOR}::Core
+)
+
+add_test(NAME PerformanceServiceTest COMMAND PerformanceServiceTest)
+
+# Add the test executable for ReportGeneratorTest
+add_executable(ReportGeneratorTest
+    tests/ReportGeneratorTest.cpp
+    ReportGenerator.cpp
+)
+
+target_include_directories(ReportGeneratorTest PRIVATE 
+${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+target_link_libraries(ReportGeneratorTest
+    Qt${QT_VERSION_MAJOR}::Test
+    Qt${QT_VERSION_MAJOR}::Sql
+    Qt${QT_VERSION_MAJOR}::Core
+)
+
+add_test(NAME ReportGeneratorTest COMMAND ReportGeneratorTest)
+
+# Add the test executable for ReportGeneratorTest
+add_executable(UserRepositoryTest
+    tests/UserRepositoryTest.cpp
+    UserRepository.cpp
+)
+
+target_include_directories(UserRepositoryTest PRIVATE 
+${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+target_link_libraries(UserRepositoryTest
+    Qt${QT_VERSION_MAJOR}::Test
+    Qt${QT_VERSION_MAJOR}::Sql
+    Qt${QT_VERSION_MAJOR}::Core
+)
+
+add_test(NAME UserRepositoryTest COMMAND UserRepositoryTest)

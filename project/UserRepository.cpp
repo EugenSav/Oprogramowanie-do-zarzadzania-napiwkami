@@ -13,6 +13,11 @@ bool UserRepository::insertUser(const QString& username, const QString& hashedPa
         return false;
     }
 
+    if (role != "waiter" && role != "manager" && role != "admin") {
+        qDebug() << "Niepoprawna rola.";
+        return false;
+    }
+
     QSqlQuery query;
     query.prepare("INSERT INTO users (username, password, role) VALUES (?, ?, ?)");
     query.addBindValue(username);
